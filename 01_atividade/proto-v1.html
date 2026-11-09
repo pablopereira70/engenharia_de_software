@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo: Botão e Seletor</title>
+    <style>
+        /* Estilização geral para centralizar e deixar moderno */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        /* Caixa que envolve o seletor */
+        div {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* Estilizando o seletor */
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        /* Estilizando o botão */
+        button {
+            margin-top: 15px;
+            width: 342px; /* Ajustado para alinhar com o card */
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Texto de mensagem */
+        #mensagem {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Consulta de horários</h1>
+
+    <div style="margin-bottom: 15px;">
+        <label for="meuSeletor">Selecione o horário </label>
+        <select id="meuSeletor">
+            <option value="opcao1">09:00h</option>
+            <option value="opcao2">10:00h</option>
+            <option value="opcao3">11:00h</option>
+        </select>
+    </div>
+
+    <button onclick="atualizarTexto()">Consultar</button>
+
+    <p id="mensagem" style="margin-top: 15px; font-weight: bold;"></p>
+
+    <script>
+        function atualizarTexto() {
+            const seletor = document.getElementById("meuSeletor");
+            const valorSelecionado = seletor.value;
+            const elementoMensagem = document.getElementById("mensagem");
+        
+            if(valorSelecionado == "opcao1" || valorSelecionado == "opcao3") {
+                elementoMensagem.innerText = "Livre";
+            } else{
+                elementoMensagem.innerText = "";
+            }
+        }
+    </script>
+
+</body>
+</html>
