@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 30px;
+}
+
+main {
+    max-width: 400px;
+    margin: auto;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+}
+
+input, select, button {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+button {
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+#mensagem {
+    font-weight: bold;
+}
+
+li {
+    margin: 10px 0;
+}
