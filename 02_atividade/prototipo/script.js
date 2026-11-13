@@ -1,8 +1,8 @@
 // 1. Configuração do Supabase
-const URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
+const _URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
 const CHAVE = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
 
-const db = window.supabase.createClient(URL, CHAVE);
+const db = window.supabase.createClient(_URL, CHAVE);
 
 // Elementos HTML
 const formulario = document.getElementById("formReserva");
@@ -11,15 +11,15 @@ const lista = document.getElementById("listaReservas");
 const campoData = document.getElementById("data");
 
 // 2. Consultar reservas do banco
-async function carregarReservas() {
 
+async function carregarReservas() {
     const data = campoData.value;
 
     if (!data) return;
 
     const { data: reservas, error } = await db
         .from("reservas")
-        .select("usuario, horario")
+        .select("usuario, horario, data_reserva")
         .eq("sala_id", 1)
         .eq("data_reserva", data)
         .order("horario");
@@ -36,7 +36,7 @@ async function carregarReservas() {
         const item = document.createElement("li");
 
         item.textContent =
-            `${reserva.horario.slice(0, 5)} - ${reserva.usuario}`;
+            `${reserva.data_reserva} - ${reserva.horario.slice(0, 5)} - ${reserva.usuario}`;
 
         lista.appendChild(item);
     });
@@ -83,7 +83,7 @@ formulario.addEventListener("submit", async (event) => {
 });
 
 // 4. Atualizar a lista
-document.getElementById("atualizar")
-    .addEventListener("click", carregarReservas);
-
 campoData.addEventListener("change", carregarReservas);
+
+// 5. Carregar reservas ao abrir a página
+carregarReservas();
