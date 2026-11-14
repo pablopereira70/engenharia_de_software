@@ -21,7 +21,7 @@ Cada diretório contém os arquivos relacionados à execução e à entrega da a
 | Atividade | Documentação | Status | Stacks |
 |---|---|---|---|
 | 01 — Introdução ao Scrum | [Acessar](./01_atividade/) | Finalizada | ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-663399?style=flat-square&logo=css&logoColor=white) ![Javascript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=black)|
-| 02 — Papéis, Artefatos e Eventos do Scrum | [Acessar](./02_atividade/) | Em progresso | ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-663399?style=flat-square&logo=css&logoColor=white) ![Javascript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=black) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=Supabase&logoColor=white) |
+| 02 — Papéis, Artefatos e Eventos do Scrum | [Acessar](./02_atividade/) | Finalizada | ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-663399?style=flat-square&logo=css&logoColor=white) ![Javascript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=black) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=Supabase&logoColor=white) |
 | 03 — Product Owner | [Acessar](./03_atividade/) | Não iniciada | — |
 | 04 — Scrum Master | [Acessar](./04_atividade/) | Não iniciada | — |
 | 05 — Time Scrum | [Acessar](./05_atividade/) | Não iniciada | — |
