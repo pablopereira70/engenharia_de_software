@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancelamento de Reserva — Atividade 04</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <main>
+        <h1>Minhas Reservas</h1>
+        <p class="subtitulo">Sala 1 — Biblioteca</p>
+
+        <label for="data">Data:</label>
+        <input type="date" id="data">
+
+        <ul id="listaReservas"></ul>
+
+        <p id="mensagem"></p>
+
+        <dialog id="dialogCancelar">
+            <p><strong>Cancelar esta reserva?</strong></p>
+            <p id="detalheReserva"></p>
+            <div class="acoes">
+                <button id="btnVoltar" class="btn-secundario">Voltar</button>
+                <button id="btnConfirmar" class="btn-perigo">Confirmar</button>
+            </div>
+        </dialog>
+    </main>
+
+</body>
+</html>
