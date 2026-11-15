@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas da Biblioteca — Atividade 05</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <main>
+        <h1>Reservas da Biblioteca</h1>
+
+        <section id="secao-minhas">
+            <h2>Minhas reservas — <span id="nomeUsuario">Ana</span></h2>
+            <ul id="listaReservas"></ul>
+        </section>
+
+        <section id="secao-consultar">
+            <h2>Consultar horários — Sala 1</h2>
+            <label for="data">Data:</label>
+            <input type="date" id="data">
+            <ul id="listaHorarios"></ul>
+        </section>
+
+        <p id="mensagem"></p>
+
+        <dialog id="dialogCancelar">
+            <p><strong>Cancelar esta reserva?</strong></p>
+            <p id="detalheReserva"></p>
+            <div class="acoes">
+                <button id="btnVoltar" class="btn-secundario">Voltar</button>
+                <button id="btnConfirmar" class="btn-perigo">Confirmar</button>
+            </div>
+        </dialog>
+    </main>
+
+</body>
+</html>
