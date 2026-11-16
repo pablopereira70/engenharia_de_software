@@ -25,7 +25,7 @@
 > "Quem pode restabelecer esse acesso, e qual verificação concreta vamos fazer para saber que o problema foi resolvido?"
 
 **Respostas na encenação:**
-- **PO:** ao cancelar, a reserva deve ficar com status "cancelada" e o horário deve voltar a aparecer como **Livre** para outro estudante. Liberar o horário tem valor porque devolve a sala à biblioteca.
+- **PO:** ao cancelar, a reserva deve deixar de constar como ativa (no protótipo, o registro é excluído) e o horário deve voltar a aparecer como **Livre** para outro estudante. Liberar o horário tem valor porque devolve a sala à biblioteca.
 - **Developers:** o teste bloqueado é o do cancelamento (reserva da Sala 1 às 10h). O próximo passo é preparar o caso de teste e o fluxo da tela de confirmação enquanto o acesso não volta.
 - **SM:** encaminha ao suporte, registra quem aciona e combina quando conferir a resposta.
 
@@ -46,7 +46,7 @@
 
 ## 4. Mensagem simulada ao suporte
 
-> Olá, suporte. Somos o trio Pablo, Pedro e Carlos da disciplina de Engenharia de Software. A conta de teste do app de reservas da biblioteca perdeu o acesso ao ambiente de teste — não conseguimos ler nem gravar reservas. Sem esse acesso, não conseguimos testar o cancelamento de reservas, que é a meta da Sprint atual. Vocês conseguem restabelecer o acesso até Amanhã? Assim que possível, avisem para retomarmos o teste.
+> Olá, suporte. Somos o trio Pablo, Pedro e Carlos da disciplina de Engenharia de Software. A conta de teste do app de reservas da biblioteca perdeu o acesso ao ambiente de teste — não conseguimos ler nem gravar reservas. Sem esse acesso, não conseguimos testar o cancelamento de reservas, que é a meta da Sprint atual. Vocês conseguem restabelecer o acesso até amanhã? Assim que possível, avisem para retomarmos o teste.
 
 ---
 
