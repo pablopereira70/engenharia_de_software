@@ -13,7 +13,7 @@
 | Representante dos Developers | Pablo |
 
 **Cenário comum a todas as etapas.**
-Sala 1, mesmo dia: **10h reservada por Ana · 11h livre · 14h reservada por Bruno**.
+Sala 1, mesmo dia: **10h reservada por Ana · 11h livre · 9h reservada por Bruno**.
 Ana quer trocar a reserva das 10h para outro horário. Se o destino estiver ocupado, a reserva original tem que ser preservada.
 O protótipo tem um **seletor "Quem está usando?"** (Ana / Bruno) para simular o login — sem ele não seria possível demonstrar o cenário com os dois estudantes.
 
@@ -62,11 +62,11 @@ Quando uma etapa pede troca temporária (encenar estudante ou mais Developers), 
 | Ação | Resultado esperado |
 |---|---|
 | Desenhar/implementar a tela "Minhas reservas" com o botão **Reagendar** em cada reserva | Ana vê o botão ao lado da reserva das 10h |
-| Desenhar/implementar a tela "Consultar horários" com 10h, 11h e 14h | As três horas aparecem com o estado real |
+| Desenhar/implementar a tela "Consultar horários" com 10h, 11h e 9h | As três horas aparecem com o estado real |
 | Implementar o **seletor de usuário** (Ana / Bruno) | É possível trocar quem está usando o app sem login |
-| Implementar o **diálogo de reagendamento** com escolha de nova hora | Ana escolhe 11h ou 14h e confirma |
-| **Teste 1:** trocar 10h → 11h | Reserva passa para 11h; 10h livre; 11h ocupada; 14h ocupada |
-| **Teste 2:** trocar 10h → 14h | Reserva continua às 10h; app avisa que o destino está ocupado; 10h e 14h ocupadas; 11h livre |
+| Implementar o **diálogo de reagendamento** com escolha de nova hora | Ana escolhe 11h ou 9h e confirma |
+| **Teste 1:** trocar 10h → 11h | Reserva passa para 11h; 10h livre; 11h ocupada; 9h ocupada |
+| **Teste 2:** trocar 10h → 9h | Reserva continua às 10h; app avisa que o destino está ocupado; 10h e 9h ocupadas; 11h livre |
 
 **Confirmação do Scrum Master (Pedro):** o plano cabe em 4 dos 5 períodos e cobre as duas situações (livre e ocupada).
 
@@ -118,12 +118,12 @@ A correção + repetição dos testes acrescenta **2 períodos** ao item A. Nova
 
 ### Resultado dos dois testes (após a correção)
 
-Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 14h reservada por Bruno**.
+Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 9h reservada por Bruno**.
 
 | Ação de Ana | Esperado em Minhas reservas | Esperado em Consultar horários | Ocorrido em Minhas reservas | Ocorrido em Consultar horários | Passou? |
 |---|---|---|---|---|---|
-| **Teste 1:** trocar 10h → 11h | Reserva passa para 11h | 10h **Livre**; 11h **Ocupado**; 14h **Ocupado** | Reserva foi para 11h | 10h **Livre**; 11h **Ocupado**; 14h **Ocupado** | ✅ |
-| **Teste 2:** trocar 10h → 14h | Reserva continua às 10h; app avisa "destino ocupado" | 10h e 14h **Ocupados**; 11h **Livre** | Reserva ficou às 10h; aviso apareceu | 10h e 14h **Ocupados**; 11h **Livre** | ✅ |
+| **Teste 1:** trocar 10h → 11h | Reserva passa para 11h | 10h **Livre**; 11h **Ocupado**; 9h **Ocupado** | Reserva foi para 11h | 10h **Livre**; 11h **Ocupado**; 9h **Ocupado** | ✅ |
+| **Teste 2:** trocar 10h → 9h | Reserva continua às 10h; app avisa "destino ocupado" | 10h e 9h **Ocupados**; 11h **Livre** | Reserva ficou às 10h; aviso apareceu | 10h e 9h **Ocupados**; 11h **Livre** | ✅ |
 
 **Sprint Backlog atualizado:** A (5 períodos) + B e C adiados.
 
@@ -138,9 +138,9 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 14h reserv
 
 **Roteiro da demonstração:**
 1. Seletor de usuário em **Ana** → "Minhas reservas" mostra a reserva das 10h com o botão **Reagendar**.
-2. Ana reagenda para **11h** → as duas telas atualizam; 10h fica **Livre**, 11h **Ocupado**, 14h continua **Ocupado**.
-3. Ana tenta reagendar das 10h para **14h** (horário do Bruno) → app avisa "destino ocupado" e a reserva **continua às 10h**; as duas telas continuam coerentes.
-4. Troca-se o seletor para **Bruno** → "Minhas reservas" mostra a reserva das 14h.
+2. Ana reagenda para **11h** → as duas telas atualizam; 10h fica **Livre**, 11h **Ocupado**, 9h continua **Ocupado**.
+3. Ana tenta reagendar das 10h para **9h** (horário do Bruno) → app avisa "destino ocupado" e a reserva **continua às 10h**; as duas telas continuam coerentes.
+4. Troca-se o seletor para **Bruno** → "Minhas reservas" mostra a reserva das 9h.
 
 **Consideração:** o reagendamento básico está **concluído na simulação** — os dois testes passaram. A **confirmação detalhada (B)** ficou adiada por falta de período.
 
@@ -216,7 +216,7 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 14h reserv
 
 ## Protótipo (referência)
 
-- **Telas:** "Minhas reservas" (com botão **Reagendar** em cada reserva) e "Consultar horários" (com 10h, 11h, 14h).
+- **Telas:** "Minhas reservas" (com botão **Reagendar** em cada reserva) e "Consultar horários" (com 9h, 10h, 11h).
 - **Seletor "Quem está usando?"** com Ana e Bruno — simula o login (necessário para o cenário, que envolve os dois estudantes).
 - **Diálogo de reagendamento:** escolha da nova hora + **Confirmar** / **Voltar**.
 - **Aviso de destino ocupado:** quando o horário escolhido já tem reserva ativa, a reserva original é preservada e o app avisa.
@@ -229,5 +229,5 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 14h reserv
 | Integrante | Papel | O que apresenta |
 |---|---|---|
 | **Pedro** | Scrum Master | A linha do tempo da Sprint e a melhoria da Retrospectiva ("que outra tela depende dessa mudança?"). |
-| **Pablo** | Developers | O ajuste do plano na Daily (renegociação dos 5 períodos) e a demonstração dos dois testes (10h→11h e 10h→14h). |
+| **Pablo** | Developers | O ajuste do plano na Daily (renegociação dos 5 períodos) e a demonstração dos dois testes (10h→11h e 10h→9h). |
 | **Carlos** | Product Owner | A Meta da Sprint e a decisão da Review (B em primeiro, lembrete como item novo). |
