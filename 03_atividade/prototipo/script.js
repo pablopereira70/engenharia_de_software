@@ -1,11 +1,11 @@
 // 1. Configuração do Supabase
-const _URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
-const CHAVE = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
+const SUPABASE_URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
 
 //notificações navegador
 const botaoNotificacoes = document.getElementById("ativarNotificacoes");
 
-const db = window.supabase.createClient(_URL, CHAVE);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Elementos HTML
 const formulario = document.getElementById("formReserva");
@@ -43,7 +43,15 @@ botaoNotificacoes.addEventListener("click", async () => {
 //centralizar notificações
 
 
-function notificarReserva(usuario, data, horario) {
+// Lembretes agendados nesta aba: id da reserva -> id do setTimeout
+const lembretesAgendados = new Map();
+
+function cancelarLembrete(reservaId) {
+    clearTimeout(lembretesAgendados.get(reservaId));
+    lembretesAgendados.delete(reservaId);
+}
+
+function notificarReserva(reservaId, usuario, data, horario) {
     if (Notification.permission !== "granted") {
         return;
     }
@@ -56,11 +64,14 @@ function notificarReserva(usuario, data, horario) {
     const tempo = dataReserva.getTime() - Date.now() - (15* 60 * 1000);
 
     if (tempo > 0 && tempo <= 2147483647) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             new Notification("Lembrete de reserva", {
                 body: `Sua reserva da Sala 01 começa às ${horario}.`
             });
+            lembretesAgendados.delete(reservaId);
         }, tempo);
+
+        lembretesAgendados.set(reservaId, timer);
     }
 }
 
@@ -99,10 +110,7 @@ async function carregarReservas() {
     botaoCancelar.type = "button";
     botaoCancelar.textContent = "Cancelar reserva";
 
-   botaoCancelar.addEventListener("click", () => {
-    alert("O botão foi clicado!"); //depuração
-    cancelarReserva(reserva);
-   });
+    botaoCancelar.addEventListener("click", () => cancelarReserva(reserva));
 
     item.appendChild(texto);
     item.appendChild(botaoCancelar);
@@ -137,9 +145,13 @@ async function cancelarReserva(reserva) {
     }
 
     if (!data || data.length === 0) {
-        console.log("Nenhuma reserva foi excluída para o id:", reserva.id);
+        console.warn("Nenhuma reserva foi excluída para o id:", reserva.id);
+        mensagem.textContent =
+            "Não foi possível cancelar: nenhuma reserva foi removida. Verifique a política DELETE do Supabase.";
         return;
     }
+
+    cancelarLembrete(reserva.id);   // reserva cancelada não deve gerar lembrete
 
     mensagem.textContent = "Reserva cancelada com sucesso!";
 
@@ -152,26 +164,35 @@ formulario.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const usuario = document.getElementById("usuario").value;
+    const usuario = document.getElementById("usuario").value.trim();
+
+    if (!usuario) {
+        mensagem.textContent = "Informe seu nome.";
+        return;
+    }
     const data = campoData.value;
     const horario = document.getElementById("horario").value;
 
     mensagem.textContent = "Processando reserva...";
 
-    const { error } = await db
+    const { data: nova, error } = await db
         .from("reservas")
         .insert({
             sala_id: 1,
             usuario: usuario,
             data_reserva: data,
             horario: horario
-        });
+        })
+        .select("id")
+        .single();
 
     if (error) {
 
         if (error.code === "23505") {
             mensagem.textContent =
                 "Esse horário já foi reservado!";
+
+            await carregarReservas();   // mostra a reserva que ocupou o horário
         } else {
             mensagem.textContent =
                 "Não foi possível realizar a reserva.";
@@ -184,7 +205,7 @@ formulario.addEventListener("submit", async (event) => {
 
     mensagem.textContent = "Reserva realizada com sucesso!";
 
-    notificarReserva(usuario, data, horario);
+    notificarReserva(nova.id, usuario, data, horario);
 
     await carregarReservas();
 });
