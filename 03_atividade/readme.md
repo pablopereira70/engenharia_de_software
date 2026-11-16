@@ -11,6 +11,8 @@ Durante o desenvolvimento prático do sistema, os três itens previstos no *Prod
 1. **Enviar lembrete (Notificações):**
    * Implementado com a *Notification API* nativa do navegador (`Notification.requestPermission()`).
    * Ao confirmar uma reserva, o sistema dispara uma notificação imediata e programa um temporizador (`setTimeout`) para enviar um lembrete automático **15 minutos antes** do horário agendado.
+   * Se a reserva for cancelada na mesma aba, o temporizador é desfeito (`clearTimeout`), para não avisar sobre uma reserva que não existe mais.
+   * Limitação: o `setTimeout` só existe enquanto a aba está aberta. Lembretes que sobrevivam ao fechamento da página exigiriam um serviço no servidor.
 2. **Cancelar reserva:**
    * Adicionado um botão **"Cancelar reserva"** gerado dinamicamente para cada item listado em `carregarReservas()`.
    * Ao clicar e confirmar na caixa de diálogo (`confirm`), a função `cancelarReserva()` executa a exclusão do registro específico no Supabase (`.delete().eq("id", reserva.id).select("id")`), liberada após a configuração da política de segurança **RLS (`DELETE`)** na tabela `reservas`.
@@ -59,7 +61,7 @@ Com a funcionalidade de cancelamento disponível diretamente na lista de reserva
 
 ### Visão do Representante dos Developers (Fluxo e Simulação de Tela)
 
-#### Fluxo de Interação (Estudante $\leftrightarrow$ Aplicativo)
+#### Fluxo de Interação (Estudante ↔ Aplicativo)
 1. O estudante seleciona a **Data** desejada no formulário; o sistema consulta o Supabase e exibe as reservas na seção **"Reservas do dia"**.
 2. Ao lado da sua reserva, o estudante clica no botão **"Cancelar reserva"**.
 3. O aplicativo exibe uma caixa de confirmação:  
