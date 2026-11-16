@@ -54,8 +54,13 @@ async function listarHorasOcupadas(salaId, data) {
 }
 
 async function cancelarReserva(id) {
-    const { error } = await db.from("reservas").delete().eq("id", id);
+    const { data, error } = await db.from("reservas").delete().eq("id", id).select("id");
     if (error) throw error;
+
+    // Com RLS sem política de DELETE, o Supabase não dá erro: apenas não remove nada.
+    if (!data || data.length === 0) {
+        throw new Error("Nenhuma reserva foi removida (verifique a política DELETE do Supabase).");
+    }
 }
 
 // --- Desenho ---
@@ -156,6 +161,13 @@ btnConfirmar.addEventListener("click", async () => {
 
 // --- Inicialização ---
 
-campoData.value = new Date().toISOString().split("T")[0];
+// Data de hoje no fuso local (toISOString usa UTC e, no Brasil, vira "amanhã" após as 21h)
+function dataLocalHoje() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split("T")[0];
+}
+
+campoData.value = dataLocalHoje();
 campoData.addEventListener("change", atualizarTelas);
 atualizarTelas();
