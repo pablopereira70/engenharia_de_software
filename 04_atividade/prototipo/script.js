@@ -71,10 +71,11 @@ function abrirConfirmacao(reserva) {
 btnConfirmar.addEventListener("click", async () => {
     if (!reservaSelecionada) return;
 
-    const { error } = await db
+    const { data: removidas, error } = await db
         .from("reservas")
         .delete()
-        .eq("id", reservaSelecionada.id);
+        .eq("id", reservaSelecionada.id)
+        .select("id");
 
     dialog.close();
 
@@ -82,6 +83,12 @@ btnConfirmar.addEventListener("click", async () => {
         // Simula o impedimento: falta de permissão ou outro bloqueio
         mensagem.textContent = "Não foi possível cancelar. O acesso ao ambiente de teste pode estar bloqueado.";
         console.error(error);
+        return;
+    }
+
+    // Com RLS sem política de DELETE, o Supabase não dá erro: apenas não remove nada.
+    if (!removidas || removidas.length === 0) {
+        mensagem.textContent = "Não foi possível cancelar: nenhuma reserva foi removida. O acesso ao ambiente de teste pode estar bloqueado.";
         return;
     }
 
@@ -96,6 +103,13 @@ btnVoltar.addEventListener("click", () => {
 });
 
 // 6. Inicialização
-campoData.value = new Date().toISOString().split("T")[0]; // data de hoje
+// Data de hoje no fuso local (toISOString usa UTC e, no Brasil, vira "amanhã" após as 21h)
+function dataLocalHoje() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split("T")[0];
+}
+
+campoData.value = dataLocalHoje();
 campoData.addEventListener("change", carregarReservas);
 carregarReservas();
