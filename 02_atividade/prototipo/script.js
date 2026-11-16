@@ -1,8 +1,8 @@
 // 1. Configuração do Supabase
-const _URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
-const CHAVE = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
+const SUPABASE_URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
 
-const db = window.supabase.createClient(_URL, CHAVE);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Elementos HTML
 const formulario = document.getElementById("formReserva");
@@ -47,7 +47,12 @@ formulario.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const usuario = document.getElementById("usuario").value;
+    const usuario = document.getElementById("usuario").value.trim();
+
+    if (!usuario) {
+        mensagem.textContent = "Informe seu nome.";
+        return;
+    }
     const data = campoData.value;
     const horario = document.getElementById("horario").value;
 
@@ -67,6 +72,8 @@ formulario.addEventListener("submit", async (event) => {
         if (error.code === "23505") {
             mensagem.textContent =
                 "Esse horário já foi reservado!";
+
+            await carregarReservas();   // mostra a reserva que ocupou o horário
         } else {
             mensagem.textContent =
                 "Não foi possível realizar a reserva.";
