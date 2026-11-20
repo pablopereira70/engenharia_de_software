@@ -15,7 +15,7 @@
 **Cenário comum a todas as etapas.**
 Sala 1, mesmo dia: **10h reservada por Ana · 11h livre · 9h reservada por Bruno**.
 Ana quer trocar a reserva das 10h para outro horário. Se o destino estiver ocupado, a reserva original tem que ser preservada.
-O protótipo tem um **seletor "Quem está usando?"** (Ana / Bruno) para simular o login — sem ele não seria possível demonstrar o cenário com os dois estudantes.
+O protótipo usa a variável global **`USUARIO_ATUAL`** (no topo do `script.js`) para simular o login — troque o nome para `"Ana"` ou `"Bruno"` para demonstrar o cenário com os dois estudantes. É o mesmo app das atividades anteriores (consultar, reservar e cancelar), com o reagendamento acrescentado.
 
 ---
 
@@ -63,7 +63,7 @@ Quando uma etapa pede troca temporária (encenar estudante ou mais Developers), 
 |---|---|
 | Desenhar/implementar a tela "Minhas reservas" com o botão **Reagendar** em cada reserva | Ana vê o botão ao lado da reserva das 10h |
 | Desenhar/implementar a tela "Consultar horários" com 10h, 11h e 9h | As três horas aparecem com o estado real |
-| Implementar o **seletor de usuário** (Ana / Bruno) | É possível trocar quem está usando o app sem login |
+| Usar a variável global **`USUARIO_ATUAL`** (Ana / Bruno) como login simulado | Os horários aparecem como "Reservado por você" ou "Ocupado" conforme o usuário |
 | Implementar o **diálogo de reagendamento** com escolha de nova hora | Ana escolhe 11h ou 9h e confirma |
 | **Teste 1:** trocar 10h → 11h | Reserva passa para 11h; 10h livre; 11h ocupada; 9h ocupada |
 | **Teste 2:** trocar 10h → 9h | Reserva continua às 10h; app avisa que o destino está ocupado; 10h e 9h ocupadas; 11h livre |
@@ -137,10 +137,10 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 9h reserva
 **Quem representou o estudante:** Pedro (SM) assumiu temporariamente o papel de estudante de outro trio.
 
 **Roteiro da demonstração:**
-1. Seletor de usuário em **Ana** → "Minhas reservas" mostra a reserva das 10h com o botão **Reagendar**.
+1. `USUARIO_ATUAL = "Ana"` → "Minhas reservas" mostra a reserva das 10h com o botão **Reagendar**.
 2. Ana reagenda para **11h** → as duas telas atualizam; 10h fica **Livre**, 11h **Ocupado**, 9h continua **Ocupado**.
 3. Ana tenta reagendar das 10h para **9h** (horário do Bruno) → app avisa "destino ocupado" e a reserva **continua às 10h**; as duas telas continuam coerentes.
-4. Troca-se o seletor para **Bruno** → "Minhas reservas" mostra a reserva das 9h.
+4. Troca-se `USUARIO_ATUAL` para `"Bruno"` e recarrega-se a página → "Minhas reservas" mostra a reserva das 9h.
 
 **Consideração:** o reagendamento básico está **concluído na simulação** — os dois testes passaram. A **confirmação detalhada (B)** ficou adiada por falta de período.
 
@@ -160,7 +160,7 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 9h reserva
 |---|---|
 | Reagendamento funcional (A) com as duas telas coerentes | **Confirmação detalhada (B):** mostrar sala + data + novo horário na mensagem de sucesso |
 | Aviso de destino ocupado preservando a reserva original | **Histórico de alterações (C):** mostrar as trocas feitas |
-| Seletor de usuário (Ana / Bruno) | **Lembrete:** notificação antes do horário |
+| Login simulado por `USUARIO_ATUAL` (Ana / Bruno) | **Lembrete:** notificação antes do horário |
 
 ### Decisão sobre o Product Backlog
 
@@ -216,11 +216,15 @@ Estado inicial de cada teste: **10h reservada por Ana · 11h livre · 9h reserva
 
 ## Protótipo (referência)
 
-- **Telas:** "Minhas reservas" (com botão **Reagendar** em cada reserva) e "Consultar horários" (com 9h, 10h, 11h).
-- **Seletor "Quem está usando?"** com Ana e Bruno — simula o login (necessário para o cenário, que envolve os dois estudantes).
+Código em [`prototipo/`](prototipo/). É o app acumulado das atividades anteriores (consultar e reservar, cancelar com confirmação, duas telas coerentes), com o reagendamento acrescentado:
+
+- **Telas:** "Consultar horários" (9h, 10h, 11h, com a tela "Reservar" aninhada) e "Minhas reservas" (com **Reagendar** e **Cancelar** em cada reserva).
+- **Login simulado:** variável global `USUARIO_ATUAL` (necessária para o cenário, que envolve os dois estudantes).
 - **Diálogo de reagendamento:** escolha da nova hora + **Confirmar** / **Voltar**.
 - **Aviso de destino ocupado:** quando o horário escolhido já tem reserva ativa, a reserva original é preservada e o app avisa.
 - **Confirmação de sucesso:** mensagem na tela (a versão detalhada com sala e data fica para a próxima Sprint — item B).
+
+> **Sobre o protótipo neste bloco:** o PDF das Atividades 06 a 10 pede o protótipo na **entrega única** do bloco (pode ser desenho ou descrição em texto), e não na Atividade 06 isoladamente. A Atividade 06 em si (a linha do tempo dos eventos) não exige protótipo; ele passa a ser usado na Reunião Diária (09) e na Review (08). Por isso há um único protótipo para o bloco, nesta pasta.
 
 ---
 
