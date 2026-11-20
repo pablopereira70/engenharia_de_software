@@ -83,14 +83,14 @@
 
 **Reserva fictícia:** Sala 1, 10/11/2026, às 10h, de Ana.
 
-**Na tela "Minhas reservas":**
-1. Ana vê a reserva "Sala 1 · 10/11 · 10h" com o botão **Cancelar reserva**.
+**Na tela "Consultar horários" (com `USUARIO_ATUAL = "Ana"`):**
+1. Ana vê o horário das 10h como **Reservado por você** (Sala 1, 10/11), com o botão **Cancelar reserva**.
 2. Ao clicar, aparece a confirmação: "Cancelar esta reserva?" com os botões **Confirmar** e **Voltar**.
 3. **Voltar** fecha a confirmação sem alterar nada — a reserva continua ativa.
-4. **Confirmar** cancela: a reserva sai da lista de "Minhas reservas".
+4. **Confirmar** cancela: o horário das 10h deixa de aparecer como "Reservado por você" e passa a **Livre**.
 
 **Quando outra pessoa consulta o horário:**
-- A consulta da Sala 1 em 10/11 deve mostrar **10h Livre** (as demais horas como estavam: 11h livre, 14h ocupada por Bruno).
+- A consulta da Sala 1 em 10/11 deve mostrar **10h Livre** (as demais horas como estavam: 11h livre, 9h ocupada por Bruno).
 
 ---
 
@@ -103,8 +103,8 @@ O impedimento continua **aberto** enquanto o acesso estiver indisponível. O tri
 
 **Teste a executar depois da liberação:**
 Com a reserva fictícia da Sala 1 às 10h ativa, cancelar e conferir duas coisas:
-- Em "Minhas reservas", a reserva não aparece mais como ativa.
-- Em "Consultar horários" (Sala 1, 10/11), o horário das 10h aparece como **Livre**.
+- Para Ana, o horário das 10h deixa de aparecer como "Reservado por você".
+- Para outro usuário (por exemplo, `USUARIO_ATUAL = "Bruno"`), o horário das 10h aparece como **Livre**.
 
 Se os dois pontos acontecerem, o impedimento foi removido e a Meta da Sprint pode ser verificada.
 
@@ -117,6 +117,12 @@ Se os dois pontos acontecerem, o impedimento foi removido e a Meta da Sprint pod
 | Integrante 1 | Encena a primeira conversa (as duas perguntas do SM) e explica qual era o impedimento. |
 | Integrante 2 | Mostra o registro do impedimento, a mensagem ao suporte e o plano ajustado. |
 | Integrante 3 | Mostra o fluxo de cancelamento e explica como o trio vai verificar se o acesso voltou e qual teste executará depois. |
+
+---
+
+## Protótipo
+
+Código em [`prototipo/`](prototipo/): é o app da Atividade 03 (consultar, reservar, cancelar, lembretes e cores, com o login simulado `USUARIO_ATUAL`), em que o cancelamento passa a pedir confirmação em um `<dialog>` com **Confirmar** e **Voltar**, e confere se o Supabase realmente removeu a reserva (com RLS sem política de `DELETE`, o banco não dá erro; apenas não remove nada). É esse comportamento que reproduz o impedimento do cenário.
 
 ---
 
