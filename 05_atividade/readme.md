@@ -27,10 +27,10 @@
 
 ## 05.B — "Minhas reservas" com Confirmar e Voltar
 
-Implementado em `prototipo/index.html` + `prototipo/script.js`:
+Implementado em `prototipo/index.html` + `prototipo/script.js`, acrescentando à tela "Consultar horários" (da Atividade 04) uma segunda tela:
 
-- Cada reserva de Ana tem um botão **Cancelar**.
-- Ao clicar, abre um `<dialog>` com a pergunta "Cancelar esta reserva?" e os botões **Voltar** e **Confirmar**.
+- **Minhas reservas** lista as reservas do usuário simulado (`USUARIO_ATUAL`) na data escolhida, cada uma com o botão **Cancelar** (que saiu da grade de horários e veio para esta tela).
+- Ao clicar, abre o `<dialog>` com "Cancelar esta reserva?" e os botões **Voltar** e **Confirmar** (o mesmo diálogo da Atividade 04).
 - **Voltar** fecha o diálogo sem alterar nada.
 - **Confirmar** apaga a reserva no Supabase e atualiza as duas telas.
 
@@ -38,24 +38,23 @@ Implementado em `prototipo/index.html` + `prototipo/script.js`:
 
 ## 05.C — Reproduzir a inconsistência de propósito
 
-Para demonstrar a falha na apresentação, a versão "com defeito" guarda a lista de ocupados em memória e atualiza **só** "Minhas reservas" depois de cancelar:
+Para demonstrar a falha na apresentação, a versão "com defeito" guarda a lista de reservas em memória e atualiza **só** "Minhas reservas" depois de cancelar:
 
 ```js
 // VERSÃO COM DEFEITO (só para a demonstração; não está no protótipo entregue)
-const estado = { ocupados: [] };
+let reservasEmMemoria = [];
 
 async function iniciar() {
-    estado.ocupados = await listarHorasOcupadas(SALA_ID, campoData.value);
-    desenharHorarios(estado.ocupados);   // só uma vez, ao abrir a página
+    reservasEmMemoria = await buscarReservas(campoData.value);   // só uma vez, ao abrir
+    desenharHorarios(reservasEmMemoria);
 }
 
 // no botão Confirmar, em vez de atualizarTelas():
-await cancelarReserva(id);
-const reservas = await listarMinhasReservas(USUARIO_ATUAL);
-desenharMinhasReservas(reservas);        // só esta tela
+await executarCancelamento(reserva);                             // aqui só apaga no banco
+desenharMinhasReservas(await buscarReservas(campoData.value));   // só esta tela
 ```
 
-Resultado: depois de confirmar, "Minhas reservas" já não mostra a reserva, mas "Consultar horários" continua mostrando 10h como **Ocupado** até a página ser recarregada. Cada tela tinha a sua própria cópia dos dados, e a cópia de "Consultar horários" ficou velha.
+Resultado: depois de confirmar, "Minhas reservas" já não mostra a reserva, mas "Consultar horários" continua mostrando 10h como **Reservado por você** (e como **Ocupado** para outro estudante) até a página ser recarregada. Cada tela tinha a sua própria cópia dos dados, e a cópia de "Consultar horários" ficou velha.
 
 ---
 
@@ -71,34 +70,39 @@ Resultado: depois de confirmar, "Minhas reservas" já não mostra a reserva, mas
 
 ## 05.E — Correção: fonte única da verdade
 
-O banco de dados passou a ser a única fonte da verdade. A função `atualizarTelas()` consulta o Supabase e redesenha as duas telas de uma vez:
+O banco de dados passou a ser a única fonte da verdade. A função `atualizarTelas()` faz **uma única consulta** ao Supabase e redesenha as duas telas a partir dela:
 
 ```js
 async function atualizarTelas() {
     const data = campoData.value;
     if (!data) return;
 
-    const [reservas, ocupadas] = await Promise.all([
-        listarMinhasReservas(USUARIO_ATUAL),
-        listarHorasOcupadas(SALA_ID, data),
-    ]);
-    desenharMinhasReservas(reservas);
-    desenharHorarios(ocupadas);
+    const { data: reservas, error } = await db
+        .from("reservas")
+        .select("id, usuario, horario, data_reserva")
+        .eq("sala_id", SALA_ID)
+        .eq("data_reserva", data)
+        .order("horario");
+
+    if (error) { /* mostra mensagem de erro */ return; }
+
+    desenharHorarios(reservas);          // tela "Consultar horários"
+    desenharMinhasReservas(reservas);    // tela "Minhas reservas" (só as do USUARIO_ATUAL)
 }
 ```
 
-Ela é chamada ao abrir a página, ao mudar a data e logo depois de cancelar. Além disso, `cancelarReserva()` agora confere se o Supabase realmente removeu a linha: com RLS sem política de `DELETE`, o banco não devolve erro, apenas não apaga nada, e o app chegaria a dizer que cancelou sem ter cancelado.
+Ela é chamada ao abrir a página, ao mudar a data e logo depois de qualquer gravação (reservar ou cancelar). Além disso, `executarCancelamento()` confere se o Supabase realmente removeu a linha: com RLS sem política de `DELETE`, o banco não devolve erro, apenas não apaga nada, e o app chegaria a dizer que cancelou sem ter cancelado.
 
 ---
 
 ## 05.F — Casos de teste
 
-Estado inicial de cada caso: reserva de Ana às 10h ativa na data escolhida; 10h aparece como **Ocupado** em "Consultar horários".
+Estado inicial de cada caso: reserva de Ana às 10h ativa na data escolhida; 10h aparece como **Reservado por você** em "Consultar horários" (e como **Ocupado** para outro usuário).
 
 | Caso | Ação | Esperado em "Minhas reservas" | Esperado em "Consultar horários" | Observado | Passou? |
 |---|---|---|---|---|---|
 | A | Cancelar → **Confirmar** | A reserva das 10h some da lista | 10h aparece como **Livre** | *(preencher)* | *(preencher)* |
-| B | Cancelar → **Voltar** | A reserva das 10h continua na lista | 10h continua **Ocupado** | *(preencher)* | *(preencher)* |
+| B | Cancelar → **Voltar** | A reserva das 10h continua na lista | 10h continua **Reservado por você** (e **Ocupado** para outro usuário) | *(preencher)* | *(preencher)* |
 
 Executar os dois casos, anotando o que apareceu de fato nas duas telas, e repor o estado inicial (recriar a reserva das 10h) entre um caso e outro.
 
