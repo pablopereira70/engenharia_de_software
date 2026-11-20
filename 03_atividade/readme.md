@@ -6,7 +6,7 @@
 
 ## 1. Resumo dos Incrementos Realizados no Protótipo
 
-Durante o desenvolvimento prático do sistema, os três itens previstos no *Product Backlog* foram implementados e validados no código (`index.html`, `style.css`, `script.js`) e no banco de dados (Supabase):
+Durante o desenvolvimento prático do sistema, os três itens previstos no *Product Backlog* foram implementados e validados no código (`index.html`, `style.css`, `script.js`) e no banco de dados (Supabase). O protótipo acumula o que veio da Atividade 02 (consultar horários e reservar, com o login simulado `USUARIO_ATUAL`) e acrescenta:
 
 1. **Enviar lembrete (Notificações):**
    * Implementado com a *Notification API* nativa do navegador (`Notification.requestPermission()`).
@@ -14,9 +14,9 @@ Durante o desenvolvimento prático do sistema, os três itens previstos no *Prod
    * Se a reserva for cancelada na mesma aba, o temporizador é desfeito (`clearTimeout`), para não avisar sobre uma reserva que não existe mais.
    * Limitação: o `setTimeout` só existe enquanto a aba está aberta. Lembretes que sobrevivam ao fechamento da página exigiriam um serviço no servidor.
 2. **Cancelar reserva:**
-   * Adicionado um botão **"Cancelar reserva"** gerado dinamicamente para cada item listado em `carregarReservas()`.
-   * Ao clicar e confirmar na caixa de diálogo (`confirm`), a função `cancelarReserva()` executa a exclusão do registro específico no Supabase (`.delete().eq("id", reserva.id).select("id")`), liberada após a configuração da política de segurança **RLS (`DELETE`)** na tabela `reservas`.
-   * A lista da tela é recarregada automaticamente, liberando o horário.
+   * Adicionado um botão **"Cancelar reserva"** gerado dinamicamente em `desenharHorarios()` para cada horário **"Reservado por você"** na tela Consultar horários.
+   * Ao clicar e confirmar na caixa de diálogo (`confirm`), a função `executarCancelamento()` executa a exclusão do registro específico no Supabase (`.delete().eq("id", reserva.id).select("id")`), liberada após a configuração da política de segurança **RLS (`DELETE`)** na tabela `reservas`.
+   * A tela é redesenhada automaticamente (`atualizarTelas()`), liberando o horário.
 3. **Personalizar as cores:**
    * Substituição das cores fixas por variáveis globais CSS (`:root` com `--cor-fundo` e `--cor-cartao`) no `style.css`.
    * Inclusão de seletores nativos `<input type="color">` no `index.html` conectados ao JavaScript para alteração em tempo real e salvamento automático das preferências no navegador via `localStorage`.
@@ -62,28 +62,31 @@ Com a funcionalidade de cancelamento disponível diretamente na lista de reserva
 ### Visão do Representante dos Developers (Fluxo e Simulação de Tela)
 
 #### Fluxo de Interação (Estudante ↔ Aplicativo)
-1. O estudante seleciona a **Data** desejada no formulário; o sistema consulta o Supabase e exibe as reservas na seção **"Reservas do dia"**.
-2. Ao lado da sua reserva, o estudante clica no botão **"Cancelar reserva"**.
+1. O estudante (definido em `USUARIO_ATUAL`) seleciona a **Data**; o sistema consulta o Supabase e mostra a tela **"Consultar horários"** com o status de cada horário: **Livre**, **Ocupado** (de outra pessoa) ou **Reservado por você**.
+2. Ao lado do horário "Reservado por você", o estudante clica em **"Cancelar reserva"**.
 3. O aplicativo exibe uma caixa de confirmação:  
    > *"Deseja realmente cancelar a reserva de [Nome] no dia [Data], às [Horário]?"*
 4. O estudante confirma (**OK**). O JavaScript envia o comando `DELETE` filtrando pelo `id` da reserva no Supabase.
-5. O aplicativo exibe a mensagem **"Reserva cancelada com sucesso!"** e atualiza a lista na tela, removendo o registro.
-6. **Visão de quem consulta depois:** Ao selecionar a mesma data, o horário cancelado não aparece mais na lista de ocupados e volta a ficar livre para qualquer outro estudante realizar uma nova reserva.
+5. O aplicativo exibe a mensagem **"Reserva cancelada com sucesso! O horário voltou a ficar livre."** e redesenha a tela.
+6. **Visão de quem consulta depois:** ao selecionar a mesma data (com outro usuário), o horário cancelado aparece como **Livre** e pode ser reservado por qualquer outro estudante.
 
 #### Simulação Visual da Tela (Estado Antes e Depois)
 
 ```text
 +-------------------------------------------------------+
 |                  Reserva de Salas                     |
+|  Logado como: Ana                                     |
 |                                                       |
-|  Data: [ 2026-11-16 ]   Horário: [ 10:00 v ]          |
-|  [ Reservar Sala 01 ]                                 |
+|  Consultar horários — Sala 1                          |
+|  Data: [ 2026-11-16 ]                                 |
 |                                                       |
-|  Mensagem: Reserva cancelada com sucesso!             |
+|  09:00  [Ocupado]                     [ Reservar ]    |
+|  10:00  [Livre]                       [ Reservar ]    |
+|  11:00  [Reservado por você]    [ Cancelar reserva ]  |
 |                                                       |
-|  Reservas do dia:                                     |
-|  • 2026-11-16 - 11:00 - Maria   [ Cancelar reserva ]  |
-|  (O horário das 10:00 foi removido e está livre)      |
+|  Reserva cancelada com sucesso! O horário voltou      |
+|  a ficar livre.                                       |
+|  (O horário das 10:00 foi cancelado e está livre)     |
 +-------------------------------------------------------+
 ```
 
