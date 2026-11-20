@@ -1,49 +1,89 @@
+// Atividade 03 — Reserva de Salas
+// Consultar horários + Reservar sala, conectados ao Supabase.
+// Novo nesta atividade: cancelar reserva (confirm), notificações com lembrete de 15 min e cores personalizáveis.
+
 // 1. Configuração do Supabase
 const SUPABASE_URL = "https://phvhwnzvlzfpcjjigqpo.supabase.co";
 const SUPABASE_KEY = "sb_publishable_OC_3Wtqj4sLEbhnC__S-LQ_I4J38l-Z";
 
-//notificações navegador
-const botaoNotificacoes = document.getElementById("ativarNotificacoes");
-
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Elementos HTML
-const formulario = document.getElementById("formReserva");
-const mensagem = document.getElementById("mensagem");
-const lista = document.getElementById("listaReservas");
+// 2. Simulação de login
+// Troque o nome abaixo para testar outro usuário (ex.: "Bruno", "Júlia").
+// Ele define quais horários aparecem como "Reservado por você".
+const USUARIO_ATUAL = "Ana";
+
+// 3. Parâmetros da sala
+const SALA_ID = 1;
+const HORARIOS = ["09:00", "10:00", "11:00"];
+
+// 4. Elementos da página
 const campoData = document.getElementById("data");
-
-
-//personalização de cores
-
+const listaHorarios = document.getElementById("listaHorarios");
+const mensagem = document.getElementById("mensagem");
+const painelReserva = document.getElementById("painelReserva");
+const detalheReserva = document.getElementById("detalheReserva");
+const btnConfirmarReserva = document.getElementById("btnConfirmarReserva");
+const btnVoltarReserva = document.getElementById("btnVoltarReserva");
+const botaoNotificacoes = document.getElementById("ativarNotificacoes");
 const inputCorFundo = document.getElementById("corFundo");
 const inputCorCartao = document.getElementById("corCartao");
 
+document.getElementById("usuarioAtual").textContent = USUARIO_ATUAL;
 
-//solicitar permissao ao navegador
+let horaSelecionada = null;
 
+// 5. Funções auxiliares
+function mostrarMensagem(texto, tipo = "info") {
+    mensagem.textContent = texto;
+    mensagem.className = tipo;
+}
+
+const hora5 = (horario) => horario.slice(0, 5);
+
+// Data de hoje no fuso local (toISOString usa UTC e, no Brasil, vira "amanhã" após as 21h)
+function dataLocalHoje() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split("T")[0];
+}
+
+function ehDoUsuario(reserva) {
+    return (reserva.usuario ?? "").trim().toLowerCase() === USUARIO_ATUAL.trim().toLowerCase();
+}
+
+// Status de cada horário para o usuário logado:
+//   livre   -> ninguém reservou
+//   meu     -> reservado por USUARIO_ATUAL
+//   ocupado -> reservado por outra pessoa
+function statusDoHorario(hora, reservas) {
+    const reserva = reservas.find(r => hora5(r.horario) === hora);
+
+    if (!reserva) return { tipo: "livre", texto: "Livre", reserva: null };
+    if (ehDoUsuario(reserva)) return { tipo: "meu", texto: "Reservado por você", reserva };
+    return { tipo: "ocupado", texto: "Ocupado", reserva };
+}
+
+// 6. Notificações e lembretes (Notification API do navegador)
 botaoNotificacoes.addEventListener("click", async () => {
     if (!("Notification" in window)) {
-        mensagem.textContent = "Seu navegador não suporta notificações.";
+        mostrarMensagem("Seu navegador não suporta notificações.", "erro");
         return;
     }
 
     const permissao = await Notification.requestPermission();
 
     if (permissao === "granted") {
-        mensagem.textContent = "Notificações ativadas com sucesso!";
+        mostrarMensagem("Notificações ativadas com sucesso!", "ok");
         botaoNotificacoes.textContent = "Notificações ativadas";
         botaoNotificacoes.disabled = true;
     } else {
-        mensagem.textContent = "Permissão para notificações não concedida.";
+        mostrarMensagem("Permissão para notificações não concedida.", "erro");
     }
 });
 
-
-//centralizar notificações
-
-
-// Lembretes agendados nesta aba: id da reserva -> id do setTimeout
+// Lembretes agendados nesta aba: id da reserva -> id do setTimeout.
+// Limitação: o setTimeout só existe enquanto a aba está aberta.
 const lembretesAgendados = new Map();
 
 function cancelarLembrete(reservaId) {
@@ -51,22 +91,16 @@ function cancelarLembrete(reservaId) {
     lembretesAgendados.delete(reservaId);
 }
 
-function notificarReserva(reservaId, usuario, data, horario) {
-    if (Notification.permission !== "granted") {
-        return;
-    }
+function agendarLembrete(reservaId, data, horario) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
 
-    new Notification("Reserva confirmada!", {
-        body: `${usuario}, sua reserva foi confirmada para ${data}, às ${horario}.`
-    });
-
-    const dataReserva = new Date(`${data}T${horario}:00`);
-    const tempo = dataReserva.getTime() - Date.now() - (15* 60 * 1000);
+    const inicio = new Date(`${data}T${hora5(horario)}:00`);
+    const tempo = inicio.getTime() - Date.now() - (15 * 60 * 1000);   // 15 min antes
 
     if (tempo > 0 && tempo <= 2147483647) {
         const timer = setTimeout(() => {
             new Notification("Lembrete de reserva", {
-                body: `Sua reserva da Sala 01 começa às ${horario}.`
+                body: `Sua reserva da Sala 01 começa às ${hora5(horario)}.`
             });
             lembretesAgendados.delete(reservaId);
         }, tempo);
@@ -75,111 +109,107 @@ function notificarReserva(reservaId, usuario, data, horario) {
     }
 }
 
-// 2. Consultar reservas do banco
+function notificarReserva(reservaId, usuario, data, horario) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
 
-async function carregarReservas() {
+    new Notification("Reserva confirmada!", {
+        body: `${usuario}, sua reserva foi confirmada para ${data}, às ${hora5(horario)}.`
+    });
+
+    agendarLembrete(reservaId, data, horario);
+}
+
+// 7. Consultar: lê o banco e desenha a(s) tela(s) a partir da mesma consulta
+async function atualizarTelas() {
     const data = campoData.value;
-
     if (!data) return;
 
     const { data: reservas, error } = await db
         .from("reservas")
-        .select("id, sala_id, usuario, horario, data_reserva")
-        .eq("sala_id", 1)
+        .select("id, usuario, horario, data_reserva")
+        .eq("sala_id", SALA_ID)
         .eq("data_reserva", data)
         .order("horario");
 
     if (error) {
-        mensagem.textContent = "Erro ao consultar reservas.";
+        mostrarMensagem("Erro ao consultar reservas. Verifique o acesso ao banco.", "erro");
         console.error(error);
         return;
     }
 
-    lista.replaceChildren();
-
-   reservas.forEach(reserva => {
-    const item = document.createElement("li");
-
-    const texto = document.createElement("span");
-
-    texto.textContent =
-        `${reserva.data_reserva} - ${reserva.horario.slice(0, 5)} - ${reserva.usuario}`;
-
-    const botaoCancelar = document.createElement("button");
-
-    botaoCancelar.type = "button";
-    botaoCancelar.textContent = "Cancelar reserva";
-
-    botaoCancelar.addEventListener("click", () => cancelarReserva(reserva));
-
-    item.appendChild(texto);
-    item.appendChild(botaoCancelar);
-
-    lista.appendChild(item);
-    });
+    desenharHorarios(reservas);
 }
 
+function desenharHorarios(reservas) {
+    listaHorarios.replaceChildren();
 
-// Cancelar uma reserva
-async function cancelarReserva(reserva) {
+    for (const hora of HORARIOS) {
+        const status = statusDoHorario(hora, reservas);
 
-    const confirmar = confirm(
-        `Deseja realmente cancelar a reserva de ${reserva.usuario} no dia ${reserva.data_reserva}, às ${reserva.horario.slice(0, 5)}?`
-    );
+        const item = document.createElement("li");
 
-    if (!confirmar) {
-        return;
+        const texto = document.createElement("span");
+        texto.textContent = hora;
+
+        const selo = document.createElement("span");
+        selo.textContent = status.texto;
+        selo.className = `selo selo-${status.tipo}`;
+
+        const acoes = document.createElement("span");
+        acoes.className = "acoes-item";
+
+        if (status.tipo !== "meu") {
+            // O botão também aparece em horários ocupados: o banco recusa e o app avisa (Teste B).
+            const btnReservar = document.createElement("button");
+            btnReservar.type = "button";
+            btnReservar.textContent = "Reservar";
+            btnReservar.className = status.tipo === "livre" ? "btn-primario" : "btn-secundario";
+            btnReservar.addEventListener("click", () => abrirReserva(hora));
+            acoes.appendChild(btnReservar);
+        }
+
+        if (status.tipo === "meu") {
+            const btnCancelar = document.createElement("button");
+            btnCancelar.type = "button";
+            btnCancelar.textContent = "Cancelar reserva";
+            btnCancelar.className = "btn-perigo";
+            btnCancelar.addEventListener("click", () => pedirCancelamento(status.reserva));
+            acoes.appendChild(btnCancelar);
+        }
+
+        item.append(texto, selo, acoes);
+        listaHorarios.appendChild(item);
     }
-
-
-    const { data, error } = await db
-        .from("reservas")
-        .delete()
-        .eq("id", reserva.id)
-        .select("id");
-
-    if (error) {
-        mensagem.textContent = "Erro ao cancelar a reserva.";
-        console.error(error);
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        console.warn("Nenhuma reserva foi excluída para o id:", reserva.id);
-        mensagem.textContent =
-            "Não foi possível cancelar: nenhuma reserva foi removida. Verifique a política DELETE do Supabase.";
-        return;
-    }
-
-    cancelarLembrete(reserva.id);   // reserva cancelada não deve gerar lembrete
-
-    mensagem.textContent = "Reserva cancelada com sucesso!";
-
-    await carregarReservas();
 }
 
+// 8. Tela "Reservar" (aninhada na consulta)
+function abrirReserva(hora) {
+    horaSelecionada = hora;
+    detalheReserva.textContent = `${campoData.value} às ${hora} — ${USUARIO_ATUAL}`;
+    painelReserva.hidden = false;
+}
 
-// 3. Registrar uma reserva
-formulario.addEventListener("submit", async (event) => {
+function fecharPainelReserva() {
+    horaSelecionada = null;
+    painelReserva.hidden = true;
+}
 
-    event.preventDefault();
+btnVoltarReserva.addEventListener("click", fecharPainelReserva);
 
-    const usuario = document.getElementById("usuario").value.trim();
+btnConfirmarReserva.addEventListener("click", async () => {
+    if (!horaSelecionada) return;
 
-    if (!usuario) {
-        mensagem.textContent = "Informe seu nome.";
-        return;
-    }
     const data = campoData.value;
-    const horario = document.getElementById("horario").value;
+    const horario = horaSelecionada;
+    fecharPainelReserva();
 
-    mensagem.textContent = "Processando reserva...";
+    mostrarMensagem("Processando reserva...");
 
     const { data: nova, error } = await db
         .from("reservas")
         .insert({
-            sala_id: 1,
-            usuario: usuario,
+            sala_id: SALA_ID,
+            usuario: USUARIO_ATUAL,
             data_reserva: data,
             horario: horario
         })
@@ -187,37 +217,59 @@ formulario.addEventListener("submit", async (event) => {
         .single();
 
     if (error) {
-
         if (error.code === "23505") {
-            mensagem.textContent =
-                "Esse horário já foi reservado!";
-
-            await carregarReservas();   // mostra a reserva que ocupou o horário
+            mostrarMensagem("Esse horário já foi reservado!", "erro");
+            await atualizarTelas();   // mostra quem ficou com o horário
         } else {
-            mensagem.textContent =
-                "Não foi possível realizar a reserva.";
-
+            mostrarMensagem("Não foi possível realizar a reserva.", "erro");
             console.error(error);
         }
-
         return;
     }
 
-    mensagem.textContent = "Reserva realizada com sucesso!";
+    mostrarMensagem("Reserva realizada com sucesso!", "ok");
+    notificarReserva(nova.id, USUARIO_ATUAL, data, horario);
 
-    notificarReserva(nova.id, usuario, data, horario);
-
-    await carregarReservas();
+    await atualizarTelas();
 });
 
-// 4. Atualizar a lista
-campoData.addEventListener("change", carregarReservas);
+// 9. Cancelar reserva
+async function pedirCancelamento(reserva) {
+    const confirmar = confirm(
+        `Deseja realmente cancelar a reserva de ${reserva.usuario} no dia ${reserva.data_reserva}, às ${hora5(reserva.horario)}?`
+    );
 
-// 5. Carregar reservas ao abrir a página
-carregarReservas();
+    if (!confirmar) return;
 
+    await executarCancelamento(reserva);
+}
 
-// 6. Personalizar e salvar cores
+async function executarCancelamento(reserva) {
+    const { data: removidas, error } = await db
+        .from("reservas")
+        .delete()
+        .eq("id", reserva.id)
+        .select("id");
+
+    if (error) {
+        mostrarMensagem("Erro ao cancelar a reserva.", "erro");
+        console.error(error);
+        return;
+    }
+
+    // Com RLS sem política de DELETE, o Supabase não dá erro: apenas não remove nada.
+    if (!removidas || removidas.length === 0) {
+        mostrarMensagem("Não foi possível cancelar: nenhuma reserva foi removida. O acesso ao banco pode estar bloqueado (política DELETE).", "erro");
+        return;
+    }
+
+    cancelarLembrete(reserva.id);   // reserva cancelada não deve gerar lembrete
+
+    mostrarMensagem("Reserva cancelada com sucesso! O horário voltou a ficar livre.", "ok");
+    await atualizarTelas();
+}
+
+// 12. Personalizar e salvar cores
 function carregarCoresSalvas() {
     const corFundoSalva = localStorage.getItem("corFundo");
     const corCartaoSalva = localStorage.getItem("corCartao");
@@ -245,4 +297,12 @@ inputCorCartao.addEventListener("input", () => {
     localStorage.setItem("corCartao", novaCor);
 });
 
+// Inicialização
+campoData.value = dataLocalHoje();
+campoData.addEventListener("change", () => {
+    fecharPainelReserva();
+    mostrarMensagem("");
+    atualizarTelas();
+});
+atualizarTelas();
 carregarCoresSalvas();
