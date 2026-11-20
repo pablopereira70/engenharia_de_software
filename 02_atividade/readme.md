@@ -31,7 +31,7 @@ Em seguida, o trio definiu a Meta da Sprint e selecionou a funcionalidade de res
 
 ### Construção do protótipo
 
-O representante dos Developers elaborou o protótipo da funcionalidade de reserva, com campos para identificação do usuário, escolha da data e seleção do horário. A aplicação utiliza HTML, CSS e JavaScript, com integração ao Supabase para registrar e consultar as reservas.
+O representante dos Developers elaborou o protótipo da funcionalidade de reserva: a tela **Consultar horários** (escolha da data e status de cada horário) com a tela **Reservar** aninhada dentro dela, ambas conectadas ao Supabase para consultar e registrar as reservas. Uma variável global no topo do `script.js`, `USUARIO_ATUAL`, simula o login: ela define quais horários aparecem como **Reservado por você** (do usuário logado), **Ocupado** (de outra pessoa) ou **Livre**. A aplicação utiliza HTML, CSS e JavaScript puros.
 
 O protótipo está disponível na pasta [prototipo](prototipo/).
 
@@ -60,6 +60,10 @@ A distribuição dos papéis está detalhada em [equipe.md](equipe.md).
 ## Revisão e Retrospectiva da Sprint
 
 Na Revisão da Sprint, o protótipo foi apresentado a um colega no papel de usuário da biblioteca. O feedback recebido foi que o aplicativo é intuitivo e fácil de usar. Como ponto de melhoria, foi observada a falta de uma indicação de que a lista exibe somente as reservas da data selecionada; essa informação poderia orientar o usuário a preencher o campo de data para visualizar as reservas correspondentes.
+
+(O feedback foi dado sobre a primeira versão do protótipo, que tinha uma lista de reservas do dia; a versão atual mostra a grade de horários da data escolhida.)
+
+(O feedback foi dado sobre a primeira versão do protótipo, que tinha uma lista de reservas do dia; a versão atual mostra a grade de horários da data escolhida.)
 
 A decisão do Product Owner sobre esse feedback e os registros da Retrospectiva estão disponíveis em [revisao_retrospectiva.md](revisao_retrospectiva.md).
 

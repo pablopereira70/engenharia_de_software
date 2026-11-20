@@ -13,14 +13,14 @@ Para os testes propostos na atividade, foi considerada a seguinte disponibilidad
 | Sala 1 | 9h | Livre |
 | Sala 1 | 10h | Ocupado |
 
-Pré-condição dos casos A e B: na data usada no teste, já existe uma reserva às 10h e não existe reserva às 9h.
+Pré-condição dos casos A e B: na data usada no teste, outro usuário (por exemplo, Bruno) já tem a reserva das 10h, não existe reserva às 9h e `USUARIO_ATUAL` está como "Ana".
 
 ## Casos de teste
 
 | Caso | Ação | Resultado esperado | Resultado observado | Situação |
 |---|---|---|---|---|
-| A | Reservar a Sala 1 às 9h | A tela mostra "Reserva realizada com sucesso!" e a reserva aparece em "Reservas do dia". | *(preencher após executar)* | A executar |
-| B | Tentar reservar a Sala 1 às 10h | A tela mostra "Esse horário já foi reservado!" e nenhuma reserva nova aparece na lista. | *(preencher após executar)* | A executar |
+| A | Clicar em **Reservar** no horário das 9h (Livre) e confirmar | A tela mostra "Reserva realizada com sucesso!" e o horário das 9h passa a aparecer como "Reservado por você". | *(preencher após executar)* | A executar |
+| B | Clicar em **Reservar** no horário das 10h (Ocupado) e confirmar | A tela mostra "Esse horário já foi reservado!" e nenhuma reserva nova é gravada. | *(preencher após executar)* | A executar |
 | C | Enviar duas requisições simultâneas para a mesma sala, data e horário | Apenas uma reserva deve ser registrada; a outra solicitação deve ser recusada. | Foi realizado o teste com requisições simultâneas e somente uma reserva foi efetivada. | **Aprovado** |
 
 ## Resultado do teste de concorrência
