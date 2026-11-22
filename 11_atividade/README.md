@@ -7,8 +7,6 @@
 
 ## 1. Registro dos cinco relatos
 
-Os relatos abaixo foram organizados a partir do cenário já documentado no README anterior e das necessidades indicadas na Atividade 11. Quando o enunciado não determina todos os detalhes, a hipótese está identificada para confirmação com a pessoa usuária.
-
 | Relato | Problema ou necessidade | Encaminhamento | Justificativa |
 |---|---|---|---|
 | R-01 — Confirmação após reagendar | Depois de mudar uma reserva, o estudante quer ter certeza imediata de que a alteração deu certo, sem abrir “Minhas reservas” para conferir. | **Refinar item existente: PB-01.** | O item de confirmação detalhada já estava em aberto. A mensagem deve identificar Sala 1, data e novo horário. |
@@ -173,20 +171,4 @@ Quando não houver resultados para o filtro escolhido, a lista apresenta uma men
 - `script.js`: confirmação detalhada, recuperação/agendamento de lembretes e filtro.
 - `style.css`: mantido, pois a estrutura visual existente já comporta os novos controles.
 
----
-
-## 6. Conferência da entrega
-
-- [x] Cinco relatos com problema/necessidade, encaminhamento e justificativa.
-- [x] Conversa curta entre Product Owner, Developers e Scrum Master.
-- [x] Hipóteses e dúvidas identificadas.
-- [x] Meta do Produto em uma frase.
-- [x] Product Backlog ordenado com quatro itens.
-- [x] Três fichas detalhadas: PB-01, PB-03 e PB-04.
-- [x] PB-02 mantido com a descrição inicial e indicado para detalhamento posterior.
-- [x] Meta da Sprint, seleção e total de 3 períodos.
-- [x] Plano dos Developers vinculado aos IDs.
-- [x] Teste simulado com resultado esperado e resultado observado.
-- [x] PB-01 atualizado com a informação da data, mantendo o mesmo ID.
-- [x] Implementações correspondentes realizadas no protótipo.
 
