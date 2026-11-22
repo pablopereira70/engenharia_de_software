@@ -17,7 +17,7 @@ Foi possível observar que, embora o horário das 9h tenha sido compreendido cor
 
 A partir do problema identificado durante a inspeção, o grupo decidiu modificar o comportamento do protótipo.
 
-A resposta em branco foi substituída por uma indicação explícita de indisponibilidade, como "Ocupado" ou "Nenhum horário disponível".
+A resposta em branco foi substituída por uma indicação explícita de indisponibilidade: a mensagem "Ocupado", em vermelho (e o "Livre" passou a aparecer em verde).
 
 No segundo teste, o usuário conseguiu identificar corretamente tanto o horário livre quanto o ocupado, demonstrando que a mudança melhorou a compreensão da interface.
 

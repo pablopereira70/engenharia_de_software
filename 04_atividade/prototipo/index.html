@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atividade 04 — Cancelamento com confirmação</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <main>
+        <h1>Reserva de Salas</h1>
+        <p class="usuario">Logado como: <strong id="usuarioAtual"></strong></p>
+
+        <!-- Tela "Consultar horários", com a tela "Reservar" aninhada dentro dela -->
+        <section id="telaConsultar">
+            <h2>Consultar horários — Sala 1</h2>
+
+            <label for="data">Data:</label>
+            <input type="date" id="data" required>
+
+            <ul id="listaHorarios"></ul>
+
+            <!-- Tela "Reservar" (aninhada na consulta) -->
+            <div id="painelReserva" class="painel" hidden>
+                <p><strong>Reservar Sala 1</strong></p>
+                <p id="detalheReserva"></p>
+                <div class="acoes">
+                    <button type="button" id="btnVoltarReserva" class="btn-secundario">Voltar</button>
+                    <button type="button" id="btnConfirmarReserva" class="btn-primario">Confirmar reserva</button>
+                </div>
+            </div>
+        </section>
+
+        <p id="mensagem" role="status"></p>
+
+
+        <section class="configuracoes">
+            <h2>Configurações</h2>
+
+            <div class="notificacoes">
+                <p>Receber notificações sobre minhas reservas</p>
+                <button type="button" id="ativarNotificacoes" class="btn-secundario">
+                    Ativar notificações
+                </button>
+            </div>
+
+            <div class="personalizacao">
+                <label for="corFundo">Cor de fundo da página:</label>
+                <input type="color" id="corFundo" value="#f0f2f5">
+
+                <label for="corCartao">Cor do cartão:</label>
+                <input type="color" id="corCartao" value="#ffffff">
+            </div>
+        </section>
+
+        <dialog id="dialogCancelar">
+            <p><strong>Cancelar esta reserva?</strong></p>
+            <p id="detalheCancelar"></p>
+            <div class="acoes">
+                <button type="button" id="btnVoltarCancelar" class="btn-secundario">Voltar</button>
+                <button type="button" id="btnConfirmarCancelar" class="btn-perigo">Confirmar</button>
+            </div>
+        </dialog>
+
+    </main>
+
+</body>
+</html>

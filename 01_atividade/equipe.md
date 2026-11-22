@@ -24,7 +24,3 @@ Na segunda rodada, os papéis foram rotacionados conforme a orientação da ativ
 **Scrum Master (SM):** responsável por facilitar a dinâmica da equipe e contribuir para que a atividade fosse realizada conforme a proposta.
 
 **Desenvolvedores:** responsáveis pela construção e adaptação do protótipo.
-
-## Observação
-
-A distribuição acima considera a ordem dos integrantes informada e a sequência de rotação utilizada na documentação. Caso a divisão efetiva do grupo tenha sido diferente, os papéis devem ser atualizados.

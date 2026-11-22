@@ -38,14 +38,14 @@ A ausência de uma mensagem para o horário ocupado gerou ambiguidade. O usuári
 
 Após a inspeção do primeiro teste, o grupo modificou o comportamento da interface para apresentar uma indicação explícita de indisponibilidade.
 
-Em vez de deixar a resposta em branco, o protótipo passou a informar que o horário estava ocupado, utilizando uma mensagem como "Ocupado" ou "Nenhum horário disponível".
+Em vez de deixar a resposta em branco, o protótipo passou a informar que o horário estava ocupado, exibindo a mensagem "Ocupado" em vermelho (e "Livre" em verde).
 
 ### Resultado observado
 
 | Horário consultado | Resultado apresentado | Observação |
 |---|---|---|
 | 9h | Livre | O usuário identificou corretamente a disponibilidade. |
-| 10h | Indicação de ocupado | O usuário identificou corretamente que o horário não estava disponível. |
+| 10h | Ocupado (em vermelho) | O usuário identificou corretamente que o horário não estava disponível. |
 
 ### Resultado da adaptação
 
